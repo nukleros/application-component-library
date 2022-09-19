@@ -1,0 +1,11 @@
+---
+commonOverlays: []
+yamlFiles:
+  - name: "postgres service"
+    path: "../../vendor/api-service.yaml"
+    outputPath: "database/zalando-postgres/service.yaml"
+    overlays:
+      - name: "ensure namespace is updated"
+        query: metadata.namespace
+        value: "{{ .namespace }}"
+

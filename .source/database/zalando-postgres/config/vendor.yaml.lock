@@ -1,0 +1,11 @@
+apiVersion: vendir.k14s.io/v1alpha1
+directories:
+- contents:
+  - git:
+      commitTitle: bump to v1.8.2 (#1932)...
+      sha: 6d0117b662bc2fd7880352b58258792ff2941d0a
+      tags:
+      - v1.8.2
+    path: ./
+  path: .source/database/zalando-postgres/vendor
+kind: LockConfig

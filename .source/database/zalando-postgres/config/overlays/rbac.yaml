@@ -1,0 +1,13 @@
+---
+commonOverlays: []
+yamlFiles:
+  - name: "postgres operator rbac"
+    path: "../../vendor/operator-service-account-rbac.yaml"
+    outputPath: "database/zalando-postgres/rbac.yaml"
+    overlays:
+      - name: "ensure namespace is updated"
+        query:
+          - metadata.namespace
+          - subjects[*].namespace
+        value: "{{ .namespace }}"
+

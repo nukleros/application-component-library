@@ -1,0 +1,48 @@
+---
+commonOverlays: []
+yamlFiles:
+  - name: "postgres operator deployment"
+    path: "../../vendor/postgres-operator.yaml"
+    outputPath: "database/zalando-postgres/deployment.yaml"
+    overlays:
+      - name: "ensure namespace is updated"
+        query: metadata.namespace
+        value: "{{ .namespace }}"
+
+      - name: "add labels"
+        query: $
+        value:
+          metadata:
+            labels:
+              app.kubernetes.io/name: postgres-operator
+              application.nukleros.io/group: database
+              application.nukleros.io/project: zalando-postgres
+
+      - name: "update pod metadata"
+        query: spec.template.metadata
+        action: merge
+        value:
+          labels:
+            app.kubernetes.io/name: postgres-operator
+            application.nukleros.io/group: database
+            application.nukleros.io/project: zalando-postgres
+
+      - name: "ensure anit-affinity is set"
+        query: spec.template.spec
+        action: merge
+        value:
+          affinity:
+            podAntiAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+                - weight: 100
+                  podAffinityTerm:
+                    topologyKey: kubernetes.io/hostname
+                    labelSelector:
+                      matchExpressions:
+                        - key: app.kubernetes.io/name
+                          operator: In
+                          values:
+                            - nginx-ingress
+          nodeSelector:
+            kubernetes.io/os: linux
+

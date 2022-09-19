@@ -1,0 +1,11 @@
+---
+commonOverlays: []
+yamlFiles:
+  - name: "postgres operator configmap"
+    path: "../../vendor/configmap.yaml"
+    outputPath: "database/zalando-postgres/config.yaml"
+    overlays:
+      - name: "ensure namespace is updated"
+        query: metadata.namespace
+        value: "{{ .namespace }}"
+
