@@ -8,4 +8,6 @@ yamlFiles:
       - name: "ensure namespace is updated"
         query: metadata.namespace
         value: "{{ .namespace }}"
+        onMissing:
+          action: inject
 

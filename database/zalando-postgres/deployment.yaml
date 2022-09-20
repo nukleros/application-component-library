@@ -8,6 +8,7 @@ metadata:
     app.kubernetes.io/name: postgres-operator
     application.nukleros.io/group: database
     application.nukleros.io/project: zalando-postgres
+  namespace: nukleros-database-system
 spec:
   replicas: 1
   strategy:
