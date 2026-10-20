@@ -1,0 +1,26 @@
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster
+spec:
+  instances: 3
+  enablePDB: true
+  storage:
+    size: 1Gi
+  managed:
+    roles:
+      - name: admin
+        superuser: true
+      - name: test
+        superuser: false
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: database
+spec:
+  name: test
+  cluster:
+    name: cluster
+  owner: test

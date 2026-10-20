@@ -15,18 +15,22 @@ yot:
 		chmod +x /usr/local/bin/yot
 
 #
-# automation workflows
+# developer automation workflows
 #
-GROUP ?=
+CATEGORY ?=
 PROJECT ?=
 project:
-	@mkdir -p .source/$(GROUP)/$(PROJECT)/config/overlays .source/$(GROUP)/$(PROJECT)/static .source/$(GROUP)/$(PROJECT)/vendor $(GROUP)/$(PROJECT)
-	@touch .source/$(GROUP)/$(PROJECT)/config/vendor.yaml .source/$(GROUP)/$(PROJECT)/config/values.yaml
+	@mkdir -p .source/$(CATEGORY)/$(PROJECT)/config/overlays .source/$(CATEGORY)/$(PROJECT)/static .source/$(CATEGORY)/$(PROJECT)/vendor $(CATEGORY)/$(PROJECT)
+	@touch .source/$(CATEGORY)/$(PROJECT)/config/vendor.yaml .source/$(CATEGORY)/$(PROJECT)/config/values.yaml
 
 download:
-	@GROUP=$(GROUP) PROJECT=$(PROJECT) .scripts/download.sh
+	@CATEGORY=$(CATEGORY) PROJECT=$(PROJECT) .scripts/download.sh
 
 overlay:
-	@for OVERLAY in `ls .source/$(GROUP)/$(PROJECT)/config/overlays`; do \
-		yot -I 2 -i .source/$(GROUP)/$(PROJECT)/config/overlays/$$OVERLAY -o . -f .source/$(GROUP)/$(PROJECT)/config/values.yaml --remove-comments -s > $(GROUP)/$(PROJECT)/$$OVERLAY;\
-	done
+	@CATEGORY=$(CATEGORY) PROJECT=$(PROJECT) .scripts/overlay.sh
+
+deploy:
+	@CATEGORY=$(CATEGORY) PROJECT=$(PROJECT) sh .source/$(CATEGORY)/$(PROJECT)/deploy.sh
+
+test:
+	@kubectl create ns $(NAMESPACE) --dry-run=client -o yaml | kubectl apply -f - && kubectl apply -f .source/$(CATEGORY)/$(PROJECT)/test/

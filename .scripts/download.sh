@@ -4,14 +4,14 @@ set -e
 
 # DESCRIPTION: performs the download of a set of manifests, using vendir, from an upstream
 # INPUTS:
-#   GROUP:   the group classification, from the parent directory in .source (e.g. certificates, ingress)
-#   PROJECT: the project, within the GROUP, to download
+#   CATEGORY: the category of components, from the parent directory in .source (e.g. certificates, ingress)
+#   PROJECT: the project, within the CATEGORY, to download
 #
 # USAGE:
-#   GROUP=secrets PROJECT=external-secrets scripts/download.sh
+#   CATEGORY=secrets PROJECT=external-secrets scripts/download.sh
 
 # validate the environment
-: ${GROUP?missing environment variable GROUP}
+: ${CATEGORY?missing environment variable CATEGORY}
 : ${PROJECT?missing environment variable PROJECT}
 
 if [ -z `which vendir` ]; then
@@ -19,7 +19,12 @@ if [ -z `which vendir` ]; then
     exit 1
 fi
 
-PROJECT_DIR=".source/${GROUP}/${PROJECT}"
+if [ -z `which helm` ]; then
+    echo "helm not installed..."
+    exit 1
+fi
+
+PROJECT_DIR=".source/${CATEGORY}/${PROJECT}"
 
 # sync the project
 # NOTE: this is meant to be run from a make target and will not work
@@ -36,5 +41,16 @@ if [ -d ${PROJECT_DIR}/vendor-helm ]; then
     # ensure the vendir directory is clean
     rm -rf ${PROJECT_DIR}/vendor/*
 
-    helm template ${PROJECT} ${PROJECT_DIR}/vendor-helm --include-crds | tee ${PROJECT_DIR}/vendor/${PROJECT}.yaml
+    # prefer a project-specific values-helm.yaml, otherwise fall back to the
+    # chart's own default values.yaml
+    if [ -f ${PROJECT_DIR}/config/values-helm.yaml ]; then
+        VALUES_HELM=${PROJECT_DIR}/config/values-helm.yaml
+    else
+        VALUES_HELM=${PROJECT_DIR}/vendor-helm/values.yaml
+    fi
+
+    helm template ${PROJECT} ${PROJECT_DIR}/vendor-helm \
+        --include-crds \
+        --kube-version '1.36.1' \
+        --values ${VALUES_HELM} | tee ${PROJECT_DIR}/vendor/${PROJECT}.yaml
 fi
