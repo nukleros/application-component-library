@@ -17,7 +17,7 @@ yamlFiles:
           metadata:
             labels:
               app.kubernetes.io/name: postgres-operator
-              application.nukleros.io/group: database
+              application.nukleros.io/category: database
               application.nukleros.io/project: zalando-postgres
 
       - name: "update pod metadata"
@@ -26,7 +26,7 @@ yamlFiles:
         value:
           labels:
             app.kubernetes.io/name: postgres-operator
-            application.nukleros.io/group: database
+            application.nukleros.io/category: database
             application.nukleros.io/project: zalando-postgres
 
       - name: "ensure anit-affinity is set"
@@ -44,7 +44,7 @@ yamlFiles:
                         - key: app.kubernetes.io/name
                           operator: In
                           values:
-                            - nginx-ingress
+                            - postgres-operator
           nodeSelector:
             kubernetes.io/os: linux
 

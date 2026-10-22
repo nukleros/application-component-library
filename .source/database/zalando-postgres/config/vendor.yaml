@@ -15,4 +15,3 @@ directories:
           - manifests/postgres-operator.yaml
           - manifests/api-service.yaml
         newRootPath: manifests
-
